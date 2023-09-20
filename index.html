@@ -1,0 +1,145 @@
+<html>
+    <div id="input">
+        <textarea id="user-input"></textarea>
+        <button id="magnetize" type="button" onclick="magnetize()">Magnetize!</button>
+    </div>
+    <div id="mount">
+        
+    </div>
+</html>
+
+
+<script>
+   
+   /**
+    * Adding magnets to a page
+    **/
+
+    function parseInput(input) {
+        
+        let lines = input.split('\n');
+
+        lines = lines.filter((line) => line.length > 0);
+
+        lines = lines.map((line) => line.split(/\W+/));
+        return lines;
+    }
+
+    function fragmentize(tokens) {
+        let fragment = document.createDocumentFragment();
+        for (let i = 0; i < tokens.length; i++) {
+            for (let j = 0; j < tokens[i].length; j++) {
+                let temp = document.createElement('div');
+                temp.textContent = tokens[i][j];
+                temp.classList.add("magnet", "unselectable");
+                temp.addEventListener("mousedown", (event) => { console.log("drag started!", event); dragElement(event.target);});
+                fragment.appendChild(temp);
+            }
+            fragment.appendChild(document.createElement("br"));
+        }
+        return fragment;
+    }
+
+    function magnetize() {
+        let userInput = document.getElementById("user-input").value;
+
+        let lines = parseInput(userInput);
+
+        let fragment = fragmentize(lines);
+
+        console.log(fragment);
+
+        document.getElementById('mount').replaceChildren(fragment);
+    }
+
+    //Making magnets moveable
+    function dragElement(original) {
+        elmnt = original.cloneNode(true);
+
+        original.classList.add("magnet-placeholder");
+        
+        elmnt.id = "drag-along";
+        elmnt.classList.add("dragging-element");
+
+        var mount = document.getElementById('mount');
+        mount.appendChild(elmnt);
+
+        var pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
+
+        elmnt.onmousedown = dragMouseDown;
+
+        function dragMouseDown(e) {
+            e = e || window.event;
+            e.preventDefault();
+
+            pos3 = e.clientX;
+            pos4 = e.clientY;
+
+            elmnt.style.top = pos4 + "px";
+            elmnt.style.left = pos3 = "px";
+
+            document.onmouseup = closeDragElement;
+            document.onmousemove = elementDrag;
+        }
+
+        function elementDrag(e) {
+            e = e || window.event;
+            e.preventDefault();
+            pos1 = pos3 - e.clientX;
+            pos2 = pos4 - e.clientY;
+            pos3 = e.clientX;
+            pos4 = e.clientY;
+            elmnt.style.top = (elmnt.offsetTop - pos2) + "px";
+            elmnt.style.left = (elmnt.offsetLeft - pos1) + "px";
+        }
+
+        function closeDragElement() {
+            original.classList.remove('magnet-placeholder');
+            elmnt.remove();
+            document.onmouseup = null;
+            document.onmousemove = null;
+        }
+
+    }
+
+    function removeOffset(elmnt) {
+        elmnt.style.remove('top');
+        elmnt.style.remove('bottom');
+    }
+
+    
+
+</script>
+
+<style>
+
+    .unselectable {
+        -webkit-user-select: none; /* Safari */        
+        -moz-user-select: none; /* Firefox */
+        -ms-user-select: none; /* IE10+/Edge */
+        user-select: none; /* Standard */
+    }
+
+    .magnet {
+        display: inline-block;
+        border: 1px solid grey;
+        border-radius: 2px;
+        margin: 10px 5px;
+        padding: 2px 5px;
+        min-width: 15px;
+        text-align: center;
+        cursor: move;
+    }
+
+    .magnet-placeholder {
+        border: 1px dotted black !important;
+        border-radius: 2px;
+        background-color: grey;
+    }
+
+    .dragging-element {
+        position: absolute;
+        z-index: 9;
+    }
+
+</style>

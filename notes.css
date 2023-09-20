@@ -1,0 +1,40 @@
+
+
+/* Pseudo elements */
+h1::first-letter {
+    font-style: normal;
+    margin-right: 5px;
+}
+
+p::first-line {
+    color: red;
+}
+
+h3 + p::first-line {
+    /* color: blue; */
+}
+
+h2 {
+    position: relative;
+}
+
+h2::after {
+    /* Needed property */
+    content: "TOP";
+    background-color: #ffe80e;
+    color: #444;
+    font-size: 16px;
+    font-weight: bold;
+    
+    /* By default pseudo elements are inline elements */
+    display: inline-block;
+    padding: 5px 10px;
+
+    position: absolute;
+    right: -15px;
+    top: -10px;
+}
+
+/* ::before is the first child element of the
+   ::after is the last child
+*/

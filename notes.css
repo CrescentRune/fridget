@@ -10,9 +10,9 @@ p::first-line {
     color: red;
 }
 
-h3 + p::first-line {
-    /* color: blue; */
-}
+/* h3 + p::first-line {
+    /* color: blue;
+} */
 
 h2 {
     position: relative;

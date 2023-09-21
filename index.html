@@ -3,7 +3,7 @@
         <textarea id="user-input"></textarea>
         <button id="magnetize" type="button" onclick="magnetize()">Magnetize!</button>
     </div>
-    <div id="mount">
+    <div id="mount" style="position: absolute;">
         
     </div>
 </html>
@@ -54,15 +54,16 @@
 
     //Making magnets moveable
     function dragElement(original) {
-        elmnt = original.cloneNode(true);
+        // elmnt = original.cloneNode(true);
+        elmnt = original;
 
         original.classList.add("magnet-placeholder");
         
         elmnt.id = "drag-along";
         elmnt.classList.add("dragging-element");
 
-        var mount = document.getElementById('mount');
-        mount.appendChild(elmnt);
+        // var mount = document.getElementById('mount');
+        // mount.appendChild(elmnt);
 
         var pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
 
@@ -71,31 +72,39 @@
         function dragMouseDown(e) {
             e = e || window.event;
             e.preventDefault();
-
+            // get the mouse cursor position at startup:
             pos3 = e.clientX;
             pos4 = e.clientY;
-
-            elmnt.style.top = pos4 + "px";
-            elmnt.style.left = pos3 = "px";
-
             document.onmouseup = closeDragElement;
+            // call a function whenever the cursor moves:
             document.onmousemove = elementDrag;
         }
 
         function elementDrag(e) {
+            console.log('Drag started (T,L,S.t,S.l)', elmnt.offsetTop, elmnt.offsetLeft, elmnt.style.top, elmnt.style.left);
             e = e || window.event;
             e.preventDefault();
+            // calculate the new cursor position:
             pos1 = pos3 - e.clientX;
             pos2 = pos4 - e.clientY;
+
             pos3 = e.clientX;
             pos4 = e.clientY;
-            elmnt.style.top = (elmnt.offsetTop - pos2) + "px";
-            elmnt.style.left = (elmnt.offsetLeft - pos1) + "px";
+
+            let derivedStyle = window.getComputedStyle(elmnt);
+            console.log(derivedStyle.marginLeft);
+            //TODO: Strip the 'px' out of margin top and margin left to use those
+
+            // set the element's new position:
+            //Constants account for margin on
+            elmnt.style.top = (elmnt.offsetTop - 10 - pos2) + "px";
+            elmnt.style.left = (elmnt.offsetLeft - 5 - pos1) + "px";
+            console.log('\t Drag finished (T,L,S.t,S.l)', elmnt.offsetTop, elmnt.offsetLeft, elmnt.style.top, elmnt.style.left);
         }
 
         function closeDragElement() {
             original.classList.remove('magnet-placeholder');
-            elmnt.remove();
+            // elmnt.remove();
             document.onmouseup = null;
             document.onmousemove = null;
         }
